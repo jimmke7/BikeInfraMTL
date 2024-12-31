@@ -1,38 +1,155 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
+:root {
+    --primary-color: #092C4C;
+    --secondary-color: #3BBA9C;
+    --category1-color: #2F80ED;
+    --category2-color: #27AE60;
+    --category3-color: #E2B93B;
+    --category4-color: #EB5757;
+    --black1-color: #000000;
+    --black2-color: #1D1D1D;
+    --black4-color: #282828;
+    --grey1-color: #333333;
+    --grey2-color: #4F4F4F;
+    --grey3-color: #828282;
+    --grey3-color: #BDBDBD;
+    --grey3-color: #E0E0E0;
+    --grey3-color: #F5F5F5;
+    --white-color: #FFFFFF;
+    --margin-xxs: .25rem;
+    --margin-xs: .5rem;
+    --margin-s: .75rem;
+    --margin-m: 1rem;
+    --margin-l: 1.25rem;
+    --margin-xl: 1.75rem;
+    --margin-xxl: 2.5rem;
+    --ff: "Inter", serif;
+    --h1: bold 4rem/1em var(--ff);
+    --h2: bold 3rem/1.2em var(--ff);
+    --h3: bold 2.25rem/1.2em var(--ff);
+    --h4: 600 1.5rem/1.6em var(--ff);
+    --big: 1.25rem/1.6em var(--ff);
+    --p: 1rem/1.6em var(--ff);
+    --small: 075rem/2em var(--ff);
+  }
 
-.header-bar {
-    background-color: #333;
-    height: 50px;
-}
-
-header {
-    text-align: center;
-    padding: 20px;
+.inter-unique {
+    font-family: var(--font-family);
+    font-optical-sizing: auto;
+    font-weight: 400; /* Adjust the weight as needed */
+    font-style: normal;
 }
 
 main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-family: var(--ff);
 }
 
-.visualization {
+/* Header styling */
+.header-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
+    padding: var(--margin-m);
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    height: var(--margin-xl);
+}
+
+
+.header-bar .avatar {
+    height: 95%;
+    width: 3%;
+    background-color: var(--white-color);
+    color: var(--primary-color);
+    font: var(--h4);
+}
+
+.header-bar .nav-bar {
+    display: flex;
+    gap: var(--margin-m);
+}
+
+.header-bar .nav-bar .nav-pill {
+    color: var(--white-color);
+    text-decoration: none;
+    font: var(--p);
+}
+
+.header-bar .nav-bar .nav-pill a {
+    color: var(--white-color);
+    text-decoration: none;
+}
+
+.header-bar .nav-bar .nav-pill a:hover {
+    text-decoration: underline;
+}
+
+
+/* Hero Basic */
+
+/* Main Content Styling */
+.visualization {
+    width: 80%;
     max-width: 1200px;
     margin: 20px 0;
 }
 
 .controls, .text-content {
-    width: 100%;
+    width: 80%;
     max-width: 1200px;
     margin: 20px 0;
 }
 
+
+
+/* Map styling */
 #map-container {
+    position: relative;
+    width: 80%;
+    height: 100vh;
+    background-color: var(--grey3-color);
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
     width: 100%;
-    height: 600px;
+    height: 100%;
+}
+
+/* #map::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(64, 38, 160, 0.1); 
+    backdrop-filter: blur(3px);
+    z-index: 1;
+} */
+
+#map-container h1, #map-container {
+    position: relative;
+    z-index: 1;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+#map-container p, #map-container {
+    position: relative;
+    z-index: 1;
+    color: var(--secondary-color);
+    text-align: center;
+}
+
+.bike-lane-path {
+    fill: none;
+    stroke-width: 2;
+    stroke: var(--category3-color);
 }

@@ -5,23 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Montreal Bike Lanes</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="header-bar"></div>
-    <header>
-        <h1>Data Visualization Story</h1>
-    </header>
     <main>
-        <section class="visualization">
-            <div id="map" style="height: 600px;"></div>
-        </section>
-        <section class="controls">
-            <!-- Controls content goes here -->
-        </section>
-        <section class="text-content">
-            <!-- Text content goes here -->
-        </section>
+        <div class="header-bar">
+            <div class="avatar">JV</div>
+            <nav class="nav-bar">
+                <div class="nav-pill"><a href="#home" class="navigation-text">Home</a></div>
+                <div class="nav-pill"><a href="#about" class="navigation-text">About</a></div>
+                <div class="nav-pill"><a href="#services" class="navigation-text">Services</a></div>
+                <div class="nav-pill"><a href="#projects" class="navigation-text">Projects</a></div>
+                <div class="nav-pill"><a href="#contact" class="navigation-text">Contact</a></div>
+                <div class="nav-pill"><a href="#blog" class="navigation-text">Blog</a></div>
+            </nav>
+        </div>
+        <!-- <div class="hero-basic">
+            <h1>Montreal Bike Lanes</h1>
+            <p>An analysis of Montreal’s biking infrastructure</p>
+        </div> -->
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
     </main>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="scripts/app.js"></script>
