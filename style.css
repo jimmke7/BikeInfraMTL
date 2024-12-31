@@ -153,3 +153,9 @@ main {
     stroke-width: 2;
     stroke: var(--category3-color);
 }
+
+.debug-bike-lane-path {
+    fill: none;
+    stroke-width: 5;
+    stroke: red;
+}

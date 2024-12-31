@@ -1,7 +1,7 @@
 import geopandas as gpd
 
 # Load the GeoJSON file into a GeoDataFrame
-gdf = gpd.read_file("data/bikelane-infra.json")
+gdf = gpd.read_file("data/raw/bikelane-infra.json")
 
 # Display the first few rows of the data
 print("\nFirst few rows of data:")
@@ -43,5 +43,7 @@ gdf['distance_to_center'] = gdf.geometry.distance(city_center)
 closest_bike_lane = gdf.loc[gdf['distance_to_center'].idxmin()]
 print(closest_bike_lane)
 
+# Export all properties of the all bike lanes to a csv file
+gdf.to_csv("data/curated/bike-lanes.csv", index=False, encoding='utf-8')
 
 

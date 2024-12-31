@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const map = new mapboxgl.Map({
         container: 'map', // Make sure this matches the ID of your map element
         style: 'mapbox://styles/jimmke7/clzq419ef00cd01pdf5nyf92j',
-        center: [-73.5673, 45.4900], // Note: Longitude first, then latitude
+        center: [-73.5650, 45.4950], // Note: Longitude first, then latitude
         zoom: 11.5,
         interactive: true // Enable zooming and dragging
     });
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .y(d => project(d).y);
 
     // Load the GeoJSON data
-    fetch('data/bikelane-infra.json')
+    fetch('data/raw/bikelane-infra.json')
         .then(response => response.json())
         .then(data => {
             // Draw the GeoJSON lines
@@ -47,7 +47,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 .data(data.features)
                 .enter().append("path")
                 .attr("d", d => line(d.geometry.coordinates))
-                .attr("class", "bike-lane-path"); // Add a class to the paths
+                .attr("class", d => {
+                    if (d.properties.SEPARATEUR_DESC === 'Mail') {
+                        return "bike-lane-path debug-bike-lane-path";
+                    }
+                    return "bike-lane-path";
+                });
 
             // Update the SVG dimensions and position on map events
             const update = () => {
