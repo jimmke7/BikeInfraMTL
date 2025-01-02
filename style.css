@@ -111,7 +111,6 @@ main {
     position: relative;
     width: 80%;
     height: 100vh;
-    background-color: var(--grey3-color);
 }
 
 #map {
@@ -122,29 +121,10 @@ main {
     height: 100%;
 }
 
-/* #map::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(64, 38, 160, 0.1); 
-    backdrop-filter: blur(3px);
-    z-index: 1;
-} */
-
 #map-container h1, #map-container {
     position: relative;
     z-index: 1;
     color: var(--primary-color);
-    text-align: center;
-}
-
-#map-container p, #map-container {
-    position: relative;
-    z-index: 1;
-    color: var(--secondary-color);
     text-align: center;
 }
 
@@ -158,4 +138,29 @@ main {
     fill: none;
     stroke-width: 5;
     stroke: red;
+}
+
+#map svg {
+    pointer-events: none;
+}
+
+
+.legend-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    padding: 10px;
+    border: 1px solid black;
+}
+
+.legend-item {
+    margin-bottom: 5px;
+}
+
+.legend-item span {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
 }
