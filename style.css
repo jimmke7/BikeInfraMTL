@@ -134,12 +134,6 @@ main {
     stroke: var(--category3-color);
 }
 
-.debug-bike-lane-path {
-    fill: none;
-    stroke-width: 5;
-    stroke: red;
-}
-
 #map svg {
     pointer-events: none;
 }

@@ -4,10 +4,10 @@ from shapely.geometry import Point
 import matplotlib.pyplot as plt
 
 # Load the CSV files into DataFrames
-file_path_counts = 'data/bike-counts.csv'
+file_path_counts = 'data/raw/bike-counts.csv'
 bike_counts_df = pd.read_csv(file_path_counts)
 
-file_path_locations = 'data/bike-counts-locations.csv'
+file_path_locations = 'data/raw/bike-counts-locations.csv'
 bike_counts_locations_df = pd.read_csv(file_path_locations)
 
 # Merge the DataFrames on the common column (e.g., 'id_compteur' in bike_counts_df and 'ID' in bike_counts_locations_df)
@@ -31,7 +31,7 @@ geometry = [Point(xy) for xy in zip(total_counts_per_location['Longitude'], tota
 geo_df = gpd.GeoDataFrame(total_counts_per_location, geometry=geometry)
 
 # Load the GeoJSON file into a GeoDataFrame
-gdf = gpd.read_file("data/bikelane-infra.json")
+gdf = gpd.read_file("data/raw/bikelane-infra.json")
 
 # Plot all bike lanes
 ax = gdf.plot(figsize=(10, 10), color='lightblue', edgecolor='black', linewidth=2)
