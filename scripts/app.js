@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const map = new mapboxgl.Map({
         container: 'map', // Make sure this matches the ID of your map element
         style: 'mapbox://styles/jimmke7/cm5eo6wqk00t601s947g96fc6',
-        center: [-73.5650, 45.4950], // Note: Longitude first, then latitude
+        center: [-73.6, 45.5], // Note: Longitude first, then latitude
         zoom: 11.5,
         interactive: true // Enable zooming and dragging
     });
