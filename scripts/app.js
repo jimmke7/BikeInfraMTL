@@ -38,55 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .x(d => project(d).x)
         .y(d => project(d).y);
 
-
-
-    // Load the GeoJSON data for boroughs
-    fetch('data/raw/borough-shapes.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-
-            // Check if the map object is initialized
-            if (!map) {
-                console.error('Map object is not initialized');
-                return;
-            }
-
-            // Add the boroughs to the map as a new layer
-            map.addSource('boroughs', {
-                'type': 'geojson',
-                'data': data
-            });
-
-            map.addLayer({
-                'id': 'boroughs-layer',
-                'type': 'fill',
-                'source': 'boroughs',
-                'layout': {},
-                'paint': {
-                    'fill-color': '#888888',
-                    'fill-opacity': 0.1
-                }
-            });
-
-            map.addLayer({
-                'id': 'boroughs-outline',
-                'type': 'line',
-                'source': 'boroughs',
-                'layout': {},
-                'paint': {
-                    'line-color': '#000000',
-                    'line-width': 2
-                }
-            });
-        })
-        .catch(error => console.error('Error loading the borough GeoJSON data:', error));
-
-    // Load the GeoJSON data
+    // Load the GeoJSON data for bike lanes
     fetch('data/raw/bikelane-infra.json')
         .then(response => response.json())
         .then(data => {
@@ -96,7 +48,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 .enter().append("path")
                 .attr("d", d => line(d.geometry.coordinates))
                 .attr("class", "bike-lane-path")
-                //.style("stroke", d => colorMapping[d.properties.SEPARATEUR_DESC] || '#3BBA9C'); // Apply colors based on SEPARATEUR_DESC
+                .attr("stroke", d => {
+                    if (d.properties.REV_AVANCEMENT_CODE === 'PE') {
+                        return '#00a5cf'; // Blue for PE
+                    }
+                    if (d.properties.TYPE_VOIE_CODE === '7') {
+                        return '#5c44ec'; // Purple for multi-use path
+                    }
+                    if (d.properties.TYPE_VOIE_CODE === '5') {
+                        return '#085c2c'; // Green - code 5 == Cycle path on its own lane (Piste cyclable en site propre)
+                    }
+                    return d.properties.SEPARATEUR_CODE && d.properties.SEPARATEUR_CODE.trim() !== '' ? '#085c2c': '#88cc4c'; // Green for non-blank SEPARATEUR_CODE, Light green for others
+                })
+                .attr("stroke-width", d => {
+                    if (d.properties.REV_AVANCEMENT_CODE === 'PE') {
+                        return 4; // REV bike path
+                    }
+                    if (d.properties.TYPE_VOIE_CODE === '5' || d.properties.TYPE_VOIE_CODE === '7') {
+                        return 3; // multi-use path or cycle path on its own lane
+                    }
+                    if (d.properties.SEPARATEUR_CODE && d.properties.SEPARATEUR_CODE.trim() !== '') {
+                        return 2; // Thicker line for multi-use path
+                    }
+                    return 1;
+                })
+                .on("click", function(event, d) {
+                    console.log(d.properties.ID_CYCL);
+                });
 
             // Update the SVG dimensions and position on map events
             const update = () => {
@@ -124,4 +102,53 @@ document.addEventListener('DOMContentLoaded', function () {
             map.on("zoom", update); // Add zoom event listener
         })
         .catch(error => console.error('Error loading the GeoJSON data:', error));
+
+    // Ensure the map is fully loaded before adding layers
+    map.on('load', function () {
+        // Load the GeoJSON data for Bixi stations
+        fetch('data/curated/bixi_stations_distance.geojson')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Add the Bixi stations to the map
+                map.addSource('bixi-stations', {
+                    'type': 'geojson',
+                    'data': data
+                });
+
+                map.addLayer({
+                    'id': 'bixi-stations-layer',
+                    'type': 'fill',
+                    'source': 'bixi-stations',
+                    'layout': {},
+                    'paint': {
+                        'fill-color': '#5c44ec',
+                        'fill-opacity': [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'distance'], // Assuming 'distance' is the property in your GeoJSON data
+                            0, 0.01, // Minimum distance with minimum opacity
+                            1000, 0.2 // Maximum distance with higher opacity
+                        ]
+                    }
+                });
+
+                map.addLayer({
+                    'id': 'bixi-stations-outline',
+                    'type': 'line',
+                    'source': 'bixi-stations',
+                    'layout': {},
+                    'paint': {
+                        'line-color': '#5c44ec',
+                        'line-opacity': 0.8,
+                        'line-width': 2
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading the Bixi stations GeoJSON data:', error));
+    });
 });
