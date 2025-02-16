@@ -138,6 +138,11 @@ main {
     pointer-events: none;
 }
 
+#hexbin-map {
+    width: 100%;
+    height: 600px;
+    position: relative;
+}
 
 .legend-container {
     position: absolute;
