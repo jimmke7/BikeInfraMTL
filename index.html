@@ -8,13 +8,14 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
     <main>
-        <div class="header-bar">
+        <!-- <div class="header-bar">
             <div class="avatar">JV</div>
             <nav class="nav-bar">
                 <div class="nav-pill"><a href="#home" class="navigation-text">Home</a></div>
@@ -24,12 +25,23 @@
                 <div class="nav-pill"><a href="#contact" class="navigation-text">Contact</a></div>
                 <div class="nav-pill"><a href="#blog" class="navigation-text">Blog</a></div>
             </nav>
-        </div>
+        </div> -->
         <div id="map-container">
             <div id="map"></div>
+            
+            <div id="controls-container">            
+                <button id="animate-map-btn">Animate Map</button>        
+                <div id="timeline">
+                    <label for="time-range">Time: </label>
+                    <input type="range" id="time-range" name="time-range" min="1" max="144" step="1" value="0">
+                    <span id="time-display">00:00</span>
+                </div>
+            </div>
         </div>
     </main>
     <!-- <script src="scripts/app.js"></script> -->
-    <script src="scripts/app-10min-counts.js"></script>
+    <!-- <script src="scripts/app-10min-counts.js"></script> -->
+    <!-- <script src="scripts/app-10min-count-heatmap.js"></script> -->
+    <script src="scripts/app-hexbin-map.js"></script>
 </body>
 </html>

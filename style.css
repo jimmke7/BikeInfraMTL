@@ -109,7 +109,7 @@ main {
 /* Map styling */
 #map-container {
     position: relative;
-    width: 80%;
+    width: 100%;
     height: 100vh;
 }
 
@@ -138,6 +138,11 @@ main {
     pointer-events: none;
 }
 
+#hexbin-map {
+    width: 100%;
+    height: 600px;
+    position: relative;
+}
 
 .legend-container {
     position: absolute;
@@ -157,4 +162,34 @@ main {
     width: 20px;
     height: 20px;
     margin-right: 5px;
+}
+
+
+#controls-container {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background: rgb(196, 196, 196, 0.2);
+    padding: 10px 40px;
+    /* border: 1px solid black; */
+    display: flex;
+    align-items: center;
+    gap: var(--margin-m); /* Add gap between the controls */
+}
+
+#animate-map-btn {
+    background: var(--primary-color);
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    width: 100px;
+}
+
+#timeline {
+    background: var(--primary-color);
+    color: white;
+    padding: 10px;
+    border: 1px solid black;
 }
