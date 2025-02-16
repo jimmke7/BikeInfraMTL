@@ -15,9 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     map.on('load', () => {
         d3.json('data/curated/bixi-stations-interval-counts.json')
             .then(data => {
-                // Filter the data to only include entries with a TIMEINTERVAL of "13:10:00"
-                const filteredData = data.features.filter(d => d.properties.TIMEINTERVAL === "08:10:00");
-
                 const svg = d3.select(map.getCanvasContainer()).append('svg')
                     .attr('class', 'map-overlay')
                     .style('position', 'absolute')
@@ -31,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return [p.x, p.y];
                 };
 
-                const update = () => {
+                const update = (filteredData) => {
                     const circles = svg.selectAll('circle')
                         .data(filteredData);
 
@@ -40,21 +37,58 @@ document.addEventListener('DOMContentLoaded', () => {
                         .merge(circles)
                         .attr('cx', d => project(d.geometry.coordinates)[0])
                         .attr('cy', d => project(d.geometry.coordinates)[1])
-                        .attr('r', d => d3.scaleLinear().domain([0, 100]).range([2, 6])(d.properties.DELTACOUNT))
-                        //.attr('fill', 'rgba(83, 230, 145, 0.2)')
+                        .attr('r', d => d3.scaleLinear().domain([0, 100]).range([2, 6])(Math.abs(d.properties.DELTACOUNT)))
                         .attr('fill', d => d.properties.DELTACOUNT > 0 ? 'rgba(83, 230, 145, 0.2)' : 'rgba(255, 0, 0, 0.2)')
-                        //.attr('stroke', 'rgba(39, 174, 96, 0.7)')
                         .attr('stroke', d => d.properties.DELTACOUNT > 0 ? 'rgba(39, 174, 96, 0.7)' : 'rgba(255, 0, 0, 0.7)')
                         .attr('stroke-width', 3);
 
                     circles.exit().remove();
                 };
 
-                map.on('viewreset', update);
-                map.on('move', update);
-                map.on('moveend', update);
+                const timeIntervals = [...new Set(data.features.map(d => d.properties.TIMEINTERVAL))];
+                timeIntervals.sort((a, b) => new Date(`1970-01-01T${a}`) - new Date(`1970-01-01T${b}`));
+                let currentIndex = 0;
+                let intervalId;
 
-                update();
+                const animate = () => {
+                    const selectedTime = timeIntervals[currentIndex];
+                    console.log(`Animating time interval: ${selectedTime}`);
+                    const filteredData = data.features.filter(d => d.properties.TIMEINTERVAL === timeIntervals[currentIndex]);
+                    update(filteredData);
+
+                    // Update the time-display element
+                    const timeDisplay = document.getElementById('time-display');
+                    timeDisplay.textContent = timeIntervals[currentIndex].slice(0, 5);
+
+                    // Update the range input value
+                    const timeRange = document.getElementById('time-range');
+                    timeRange.value = currentIndex;
+
+                    currentIndex = (currentIndex + 1) % timeIntervals.length;
+                };
+
+                const animateButton = document.getElementById('animate-map-btn');
+                animateButton.addEventListener('click', () => {
+                    if (!intervalId) {
+                        intervalId = setInterval(animate, 200); // Interval in milliseconds
+                        animate();
+                        animateButton.textContent = 'Stop';
+                    } else {
+                        clearInterval(intervalId);
+                        intervalId = null;
+                        animateButton.textContent = 'Animate Map';
+                    }
+                });
+
+                const timeRange = document.getElementById('time-range');
+                timeRange.addEventListener('input', (event) => {
+                    currentIndex = parseInt(event.target.value, 10);
+                    animate();
+                });
+
+                map.on('viewreset', () => animate());
+                map.on('move', () => animate());
+                map.on('moveend', () => animate());
             })
             .catch(error => console.error('Error loading the Bixi stations GeoJSON data:', error));
     });

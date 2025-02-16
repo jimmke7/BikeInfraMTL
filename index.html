@@ -14,7 +14,7 @@
 </head>
 <body>
     <main>
-        <div class="header-bar">
+        <!-- <div class="header-bar">
             <div class="avatar">JV</div>
             <nav class="nav-bar">
                 <div class="nav-pill"><a href="#home" class="navigation-text">Home</a></div>
@@ -24,12 +24,22 @@
                 <div class="nav-pill"><a href="#contact" class="navigation-text">Contact</a></div>
                 <div class="nav-pill"><a href="#blog" class="navigation-text">Blog</a></div>
             </nav>
-        </div>
+        </div> -->
         <div id="map-container">
             <div id="map"></div>
+
+            <div id="controls-container">            
+                <button id="animate-map-btn">Animate Map</button>        
+                <div id="timeline">
+                    <label for="time-range">Time: </label>
+                    <input type="range" id="time-range" name="time-range" min="1" max="144" step="1" value="0">
+                    <span id="time-display">00:00</span>
+                </div>
+            </div>
         </div>
     </main>
     <!-- <script src="scripts/app.js"></script> -->
     <script src="scripts/app-10min-counts.js"></script>
+    <!-- <script src="scripts/app-10min-count-heatmap.js"></script> -->
 </body>
 </html>
