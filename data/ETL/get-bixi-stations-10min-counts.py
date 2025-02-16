@@ -7,58 +7,48 @@ bixi_stations = gpd.read_file('data/curated/bixi-stations.json')
 # Filter stations that are within the city area
 bixi_stations = bixi_stations[bixi_stations['WITHIN_CITY_AREA']]
 
-# Load bixi data
-bixi_data = pd.read_csv('data/raw/bixi/bixi-2024.csv')
+# Load the bixi trips data of 2024
+bixi_trips = pd.read_csv('data/raw/bixi/bixi-2024.csv')
 
 # Filter bixi data to only include stations that are within the city area
-bixi_data = bixi_data[bixi_data['STARTSTATIONNAME'].isin(bixi_stations['STATIONNAME'])]
-bixi_data = bixi_data[bixi_data['ENDSTATIONNAME'].isin(bixi_stations['STATIONNAME'])]
+bixi_trips = bixi_trips[bixi_trips['STARTSTATIONNAME'].isin(bixi_stations['STATIONNAME'])]
+bixi_trips = bixi_trips[bixi_trips['ENDSTATIONNAME'].isin(bixi_stations['STATIONNAME'])]
 
-# Transform STARTTIMEMS and ENDTIMEMS into datetime
-bixi_data['STARTTIME'] = pd.to_datetime(bixi_data['STARTTIMEMS'], unit='ms')
-bixi_data['ENDTIME'] = pd.to_datetime(bixi_data['ENDTIMEMS'], unit='ms')
+# Transform STARTTIMEMS and ENDTIMEMS to time of day rounded down to hours and minutes
+bixi_trips['STARTTIME'] = pd.to_datetime(bixi_trips['STARTTIMEMS'], unit='ms').dt.floor('min').dt.time
+bixi_trips['ENDTIME'] = pd.to_datetime(bixi_trips['ENDTIMEMS'], unit='ms').dt.floor('min').dt.time
 
-# Get hour of day and round to 10 minutes
-bixi_data['STARTTIME10'] = bixi_data['STARTTIME'].dt.floor('10min')
-bixi_data['ENDTIME10'] = bixi_data['ENDTIME'].dt.floor('10min')
 
-# Generate 10 minute intervals between 0 and 24 hours
-time_intervals = pd.date_range('2024-01-01', periods=144, freq='10min').time
+# Round it down to a 10 minute interval
+bixi_trips['STARTTIMEINTERVAL'] = bixi_trips['STARTTIME'].apply(lambda x: x.replace(minute=x.minute//10*10))
+bixi_trips['ENDTIMEINTERVAL'] = bixi_trips['ENDTIME'].apply(lambda x: x.replace(minute=x.minute//10*10))
 
-# Create a dataframe with all possible combinations of stations and time intervals
-stations_time_intervals = pd.MultiIndex.from_product(
-    [bixi_stations['STATIONNAME'], time_intervals], names=['STATIONNAME', 'TIME']
-).to_frame(index=False)
 
-# Convert 'TIME' column to datetime
-stations_time_intervals['TIME'] = pd.to_datetime(stations_time_intervals['TIME'].astype(str), format='%H:%M:%S')
+# group by start statation and start time interval and count the number of trips
+bixi_starttrips_grouped = bixi_trips.groupby(['STARTSTATIONNAME', 'STARTTIMEINTERVAL']).size().reset_index(name='STARTCOUNT')
 
-# Add station coordinates to the dataframe
-stations_time_intervals = stations_time_intervals.merge(
-    bixi_stations[['STATIONNAME', 'STATIONLATITUDE', 'STATIONLONGITUDE', 'geometry']],
-    on='STATIONNAME', how='left'
-)
+# group by end statation and end time interval and count the number of trips
+bixi_endtrips_grouped = bixi_trips.groupby(['ENDSTATIONNAME', 'ENDTIMEINTERVAL']).size().reset_index(name='ENDCOUNT')
 
-# Add start and end counts to the stations_time_intervals dataframe
-start_counts = bixi_data.groupby(['STARTSTATIONNAME', 'STARTTIME10']).size().reset_index(name='STARTCOUNT')
-end_counts = bixi_data.groupby(['ENDSTATIONNAME', 'ENDTIME10']).size().reset_index(name='ENDCOUNT')
+# Merge the two dataframes
+bixi_trips_grouped = bixi_starttrips_grouped.merge(bixi_endtrips_grouped, left_on=['STARTSTATIONNAME', 'STARTTIMEINTERVAL'], right_on=['ENDSTATIONNAME', 'ENDTIMEINTERVAL'])
 
-stations_time_intervals = stations_time_intervals.merge(
-    start_counts, left_on=['STATIONNAME', 'TIME'], right_on=['STARTSTATIONNAME', 'STARTTIME10'], how='left'
-).merge(
-    end_counts, left_on=['STATIONNAME', 'TIME'], right_on=['ENDSTATIONNAME', 'ENDTIME10'], how='left'
-)
+# Only keep 1 of the station name columns and time interval columns and keep the count columns
+bixi_trips_grouped = bixi_trips_grouped[['STARTSTATIONNAME', 'STARTTIMEINTERVAL', 'STARTCOUNT', 'ENDCOUNT']]
+bixi_trips_grouped.columns = ['STATIONNAME', 'TIMEINTERVAL', 'STARTCOUNT', 'ENDCOUNT']
 
-# Fill NaN values with 0
-stations_time_intervals = stations_time_intervals.fillna(0).infer_objects(copy=False)
 
-# Drop unnecessary columns
-stations_time_intervals = stations_time_intervals.drop(columns=['STARTSTATIONNAME', 'STARTTIME10', 'ENDSTATIONNAME', 'ENDTIME10'])
+# Create a new column that is the difference between the start count and the end count
+bixi_trips_grouped['DELTACOUNT'] = bixi_trips_grouped['STARTCOUNT'] - bixi_trips_grouped['ENDCOUNT']
 
-# Delete rows with invalid station names
-stations_time_intervals = stations_time_intervals[stations_time_intervals['STATIONNAME'] != 0]
 
-# Reset index
-stations_time_intervals = stations_time_intervals.reset_index(drop=True)
+# Merge the bixi stations data with the bixi trips data
+bixi_stations_interval_counts = bixi_stations.merge(bixi_trips_grouped, on='STATIONNAME', how='left')
 
-print(stations_time_intervals.head())
+
+# Save the data as bixi-stations-interval-counts.json
+bixi_stations_interval_counts.to_file('data/curated/bixi-stations-interval-counts.json', driver='GeoJSON')
+
+# Print that the data has been saved
+print('Data saved as data/curated/bixi-stations-interval-counts.json')
+

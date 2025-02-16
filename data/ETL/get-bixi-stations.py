@@ -22,13 +22,11 @@ gdf_bixi_stations = gdf_bixi_stations[gdf_bixi_stations.geometry.is_empty == Fal
 # Filter out invalid points with coordinates (0, 0)
 gdf_bixi_stations = gdf_bixi_stations[(gdf_bixi_stations['STATIONLATITUDE'] != 0) & (gdf_bixi_stations['STATIONLONGITUDE'] != 0)]
 
-
 # Load city area
 city_area = gpd.read_file('data/curated/city-area.json')
 
 # Make sure the city area is in the same projection as the bixi stations
-city_area = city_area.to_crs('EPSG:3857')
-gdf_bixi_stations = gdf_bixi_stations.to_crs('EPSG:3857')
+city_area = city_area.to_crs('EPSG:4326')
 
 # Create a column that indicates if the station is within the city area
 gdf_bixi_stations['WITHIN_CITY_AREA'] = gdf_bixi_stations.within(city_area.geometry.iloc[0])
