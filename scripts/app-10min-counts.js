@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/jimmke7/cm5eo6wqk00t601s947g96fc6',
-        center: [-73.6, 45.5],
+        // center: [-73.6, 45.5],
+        center: [-73.51, 45.518],
         zoom: 11.5,
         interactive: true
     });

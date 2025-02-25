@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const map = new mapboxgl.Map({
         container: 'map', // Make sure this matches the ID of your map element
         style: 'mapbox://styles/jimmke7/cm5eo6wqk00t601s947g96fc6',
-        center: [-73.5673, 45.5017], // Center to Montreal
-        zoom: 11.5,
+        center: [-73.51, 45.518], // Center to Montreal
+        zoom: 11.8,
         interactive: true // Enable zooming and dragging
     });
 
@@ -33,13 +33,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const hexbin = d3.hexbin()
-        .radius(20)
+        .radius(15)
         .extent([[0, 0], [svgContainer.clientWidth, svgContainer.clientHeight]]);
 
     Promise.all([
         d3.json('data/curated/city-area-focus.json'),
         d3.json('data/curated/bixi-stations-interval-counts.json')
     ]).then(([cityData, bixiData]) => {
+        console.log('Data loaded:', { cityData, bixiData }); // Console log when data is loaded
+
         const cityPolygon = cityData.features[0].geometry.coordinates[0];
 
         // Generate a grid of points within the bounding box of the city
@@ -119,6 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const hexbinData = hexbin(points);
 
+                // Define filteredBixiData based on the current time interval
+                const filteredBixiData = bixiData.features.filter(d => d.properties.TIMEINTERVAL === timeIntervals[currentIntervalIndex]);
+
                 // Sum the delta counts for Bixi stations within each hexagon
                 hexbinData.forEach(hex => {
                     hex.deltaCount = 0;
@@ -137,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .merge(paths)
                     .attr("d", hexbin.hexagon())
                     .attr("transform", d => `translate(${d.x},${d.y})`)
-                    .attr("fill", d => d.deltaCount > 0 ? "green" : "red")
+                    .attr("fill", d => d.deltaCount > 0 ? "#008000" : "#FF0000") // Green: #008000, Red: #FF0000
                     .attr("fill-opacity", d => 0.5 * Math.abs(d.deltaCount) / maxDeltaCount)
                     .attr("stroke", "#333333")
                     .attr("stroke-opacity", 0.7);

@@ -8,7 +8,7 @@ boroughs = gpd.read_file('data/raw/borough-shapes.json')
 boroughs = boroughs.to_crs(epsg=4326)
 
 # Create a GeoDataFrame that represents the area of the city
-city_geometry = gpd.GeoDataFrame(geometry=[Polygon(boroughs.unary_union)], crs='EPSG:3857')
+city_geometry = gpd.GeoDataFrame(geometry=[Polygon(boroughs.unary_union)], crs='EPSG:4326')
 
 # Save the city area to a GeoJSON file
 city_geometry.to_file('data/curated/city-area.json', driver='GeoJSON')

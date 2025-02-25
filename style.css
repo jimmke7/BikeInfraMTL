@@ -193,3 +193,11 @@ main {
     padding: 10px;
     border: 1px solid black;
 }
+
+#legend {
+    position: absolute;
+    bottom: 20px;
+    left: 0px;
+    width: auto;
+    height: auto;
+}
